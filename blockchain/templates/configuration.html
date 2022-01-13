@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Dashboard</title>
+    <link rel="stylesheet" href="/static/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/vendor/DataTables/css/datatables.min.css">
+    <link rel="stylesheet" href="\static\vendor\font-awesome\font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top ">
+    <div class="container">
+        <a href="#" class="navbar-brand">Blockchain Dashboard</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item ">
+                    <a href="/" class="nav-link">Home</a>
+                </li>
+                 <li class="nav-item active">
+                    <a href="/configuration" class="nav-link">Configuration</a>
+                </li>
+                 
+            </ul>
+        </div>
+    </div>
+
+</nav>
+
+
+    <!-- Add nodes -->
+    <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card-body">
+              <h4 class="card-title">Add Blockchain nodes</h4>
+              <p class="card-text">Enter a list of Blockchain node URLs separated by comma and click on "Add" button to add them to the list of nodes</p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="container alert alert-secondary">
+        <form id="node_form">
+          <div class="row">
+            <label class="col-sm-2">Node URLs:</label>
+            <div class="col-sm-10">
+              <input type="text" name="nodes" id="nodes" rows="2" class="form-control">
+            </div>
+          </div>
+  
+          <br>
+  
+          <div class="row">
+            <div class="col-lg-12 text-center">
+              <input type="button" id="add_node_button" class="btn btn-primary btn-lg" value="Add Node">
+            </div>
+          </div>
+        </form>
+      </div>
+  
+      <hr>
+  
+      <!-- List of nodes -->
+      <div class="container">
+        <div class="row">
+  
+          <div class="col-lg-12">
+            <div class="card-body">
+              <h4 class="card-title">This node can retrieve Blockchain data from the following nodes:</h4>
+            </div>
+          </div>
+  
+          <div class="col-lg-12" id="list_nodes">
+  
+          </div>
+  
+        </div>
+      </div>
+
+
+<script src="/static/vendor/jquery/jquery.min.js"></script>
+<script src="/static/vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="/static/vendor/DataTables/js/datatables.min.js"></script>
+<script src="/static/vendor/DataTables/js/ellipsis.js"></script>
+
+    <script>
+       $(function() {
+           $('#add_node_button').click(function() {
+            $.ajax({
+                    url: '/nodes/register',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: $('#node_form').serialize(),
+                    success: function(response) {
+                        document.getElementById('nodes').value = '';
+                        window.location.reload(); //To refresh the page
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    },
+            });
+           });
+           $.ajax({
+                    url: '/nodes/get',
+                    type: 'GET',
+                    success: function(response) {
+                        // let loadedNodes = '';
+                        for(i=0; i < response['nodes'].length; i++){
+                            loadedNode = "<li><a href='http://127.0.0.1:"+response['nodes'][i]+"'>"+response['nodes'][i] + "</a></li>";
+                            document.getElementById('list_nodes').innerHTML += loadedNode;
+                        }
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    },
+            });
+          
+       });
+    </script>
+</body>
+</html>
+
